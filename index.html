@@ -4,12 +4,37 @@
 <body>
 
     <input type="text" id="asdf" />
-    <ul>
-        <li>asdfasdf</li>
-    </ul>
+    <input type="text" id="sdfg" />
     <script src="src/select-filter.js"></script>
     <script>
-        var a = new SelectFilter(document.getElementById('asdf'), ['1234', 'asdf', '中文阿斯蒂芬']);
+        var data = [
+                '1234',
+                'asdf',
+                'asdf',
+                '中文阿斯蒂芬',
+                '中文a阿斯蒂芬',
+                '中文阿斯蒂芬',
+                '中文a阿斯蒂芬',
+            ];
+        var a = new SelectFilter(document.getElementById('asdf'), data, {
+            listBuilder: function (d) {
+                //console.log(this)
+                return d;
+            },
+            ajaxSuccess: function (data, value) {
+                return value;
+            }
+        });
+
+        var b = new SelectFilter(document.getElementById('sdfg'), data, {
+            listBuilder: function (d) {
+                //console.log(this)
+                return d;
+            },
+            ajaxSuccess: function (data, value) {
+                return value;
+            }
+        });
 
         console.log(a);
     </script>

@@ -1,10 +1,14 @@
 (function (window) {
+    var tpl = {
+        li: '<li class="select-filter-item" data-select-filter-data-index="{index}">{content}</li>'
+    };
     function SelectFilter(dom, data, options) {
         var _self = this,
             defaults = {
                 listBuilder: function (data) {
                     return data;
                 },
+                chooseCb: function (data) {},
                 ajaxUrl: '',
                 ajaxMethod: 'get',
                 ajaxData: null,
@@ -24,29 +28,33 @@
         this.ul = document.createElement('ul');
         this.lastLi = document.createElement('li');
         this.domOldValue;
+        this.filteredData;
 
-        this.updateList();
+        _updateList.call(this);
         _initLastLi.call(this);
         _bindEvent.call(this);
         _initDom.call(this);
-    }
-
-    SelectFilter.prototype.updateList = function () {
-        var _self = this,
-            data, temp, listBuilder = _self.options.listBuilder,
-            html = [];
-        data = _filter.call(_self);
-        data.forEach(function (e) {
-            html.push('<li>' + listBuilder.call(_self, e) + '</li>');
-        });
-        _self.ul.innerHTML = html.join('');
-        _self.ul.appendChild(_self.lastLi);
     }
 
     window.SelectFilter = SelectFilter;
 
 
     //内部函数
+    function _updateList() {
+        var _self = this,
+            data, temp, listBuilder = _self.options.listBuilder,
+            html = [];
+        data = _filter.call(_self);
+        data.forEach(function (e, i) {
+            var s = tpl.li
+                .replace(/{index}/g, i)
+                .replace(/{content}/g, listBuilder.call(_self, e));
+            html.push(s);
+        });
+        _self.ul.innerHTML = html.join('');
+        _self.ul.appendChild(_self.lastLi);
+    }
+
     function _filter() {
         var _self = this,
             key = _self.dom.value,
@@ -88,6 +96,7 @@
         }
         console.log(data);
         //过滤逻辑end
+        _self.filteredData = data;
         return data;
     }
 
@@ -107,7 +116,7 @@
                     var temp = options.ajaxSuccess(data, input.value);
                     if (!isUndefined(temp)) {
                         _self.data.push(temp);
-                        _self.updateList();
+                        _updateList.call(_self);
                     }
                     btn.disabled = '';
                 },
@@ -127,7 +136,7 @@
                 return;
             }
             _self.domOldValue = _self.dom.value;
-            _self.updateList();
+            _updateList.call(_self);
         });
         bind(_self.dom, 'focus', function (e) {
             _self.ul.style.display = 'block';
@@ -141,6 +150,19 @@
                 }
             }
             _self.ul.style.display = 'none';
+        });
+        bind(_self.ul, 'click', function (e) {
+            var li, index, chooseCb = _self.options.chooseCb;
+            e.path.forEach(function (el) {
+                if (el.parentNode === _self.ul) {
+                    li = el;
+                }
+            });
+            console.log(li.className)
+            if (li.className.indexOf('select-filter-item') > -1) {
+                index = li.dataset.selectFilterDataIndex;
+                chooseCb.call(_self, _self.filteredData[index], index);
+            }
         });
     }
 

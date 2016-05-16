@@ -8,13 +8,15 @@
                 listBuilder: function (data) {
                     return data;
                 },
-                chooseCb: function (data) {},
+                chooseCb: function (data, index, dom) {},
                 ajaxUrl: '',
                 ajaxMethod: 'get',
                 ajaxData: null,
                 ajaxSuccess: function () {},
                 ajaxError: function () {},
-                filterKey: undefined
+                filterKey: undefined,
+                addBtn: false,
+                appendInContainer: false
             };
         if (!isArray(data) && isObject(data)) {
             options = data;
@@ -31,8 +33,9 @@
         this.filteredData;
 
         _updateList.call(this);
-        _initLastLi.call(this);
+        if (this.options.addBtn) _initLastLi.call(this);
         _bindEvent.call(this);
+        _styleHandler.call(this);
         _initDom.call(this);
     }
 
@@ -57,12 +60,11 @@
 
     function _filter() {
         var _self = this,
-            key = _self.dom.value,
+            key = _self.dom.value || '',
             i, l,
             filterKey = _self.options.filterKey,
             data;
 
-        console.log(key);
         //过滤逻辑
         //从_self.data中根据key筛选数据，并push到data数组中
         if (key === '') {
@@ -70,13 +72,14 @@
         } else {
             data = [];
             if (isUndefined(filterKey)) {
-                _self.data.forEach(function (e) {
-                    if (e.indexOf(key) > -1) {
+                Array.prototype.forEach.call(_self.data, function (e) {
+                    console.log(e);
+                    if (_self.options.listBuilder(e).indexOf(key) > -1) {
                         data.push(e);
                     }
                 });
             } else if (isArray(filterKey)) {
-                _self.data.forEach(function (e) {
+                Array.prototype.forEach.call(_self.data, function (e) {
                     for (i = 0, l = filterKey.length; i < l; i++) {
                         if (e.hasOwnProperty(filterKey[i]) && e[filterKey[i]].indexOf(key) > -1) {
                             data.push(e);
@@ -94,7 +97,6 @@
                 console.error('filterKey must be an Array or a String or undefined')
             }
         }
-        console.log(data);
         //过滤逻辑end
         _self.filteredData = data;
         return data;
@@ -158,20 +160,33 @@
                     li = el;
                 }
             });
-            console.log(li.className)
             if (li.className.indexOf('select-filter-item') > -1) {
                 index = li.dataset.selectFilterDataIndex;
-                chooseCb.call(_self, _self.filteredData[index], index);
+                chooseCb.call(_self, _self.filteredData[index], index, _self.dom);
+                _self.ul.style.display = 'none';
             }
         });
     }
 
     function _initDom() {
         this.ul.style.display = 'none';
-        this.dom.parentNode.insertBefore(this.container, this.dom);
-        this.container.appendChild(this.dom);
-        this.container.appendChild(this.ul);
+        if (this.options.appendInContainer) {
+            this.dom.parentNode.insertBefore(this.container, this.dom);
+            this.container.appendChild(this.dom);
+            this.container.appendChild(this.ul);
+        } else {
+            this.dom.parentNode.appendChild(this.ul);
+            this.ul.className = 'select-filter-list';
+        }
     }
+
+    function _styleHandler() {
+        this.ul.style.width = this.dom.offsetWidth - 2 + 'px';
+        this.ul.style.position = 'absolute';
+        this.ul.style.top = this.dom.offsetTop + this.dom.offsetHeight - 1 + 'px';
+        this.ul.style.left = this.dom.offsetLeft + 'px';
+    }
+
     //通用函数
     var bind = (function () {
         if (window.addEventListener) {
@@ -199,7 +214,6 @@
         if (xhr) {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
-                    console.log(xhr)
                     if (xhr.status == 200) {
                         options.success.call(xhr, xhr.responseText)
                     } else {

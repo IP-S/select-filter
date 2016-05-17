@@ -2,6 +2,7 @@
     var tpl = {
         li: '<li class="select-filter-item" data-select-filter-data-index="{index}">{content}</li>'
     };
+
     function SelectFilter(dom, data, options) {
         var _self = this,
             defaults = {
@@ -11,7 +12,9 @@
                 chooseCb: function (data, index, dom) {},
                 ajaxUrl: '',
                 ajaxMethod: 'get',
-                ajaxData: null,
+                setAjaxData: function (value) {
+                    return value;
+                },
                 ajaxSuccess: function () {},
                 ajaxError: function () {},
                 filterKey: undefined,
@@ -33,7 +36,7 @@
         this.filteredData;
 
         _updateList.call(this);
-        if (this.options.addBtn) _initLastLi.call(this);
+        _initLastLi.call(this);
         _bindEvent.call(this);
         _styleHandler.call(this);
         _initDom.call(this);
@@ -55,7 +58,9 @@
             html.push(s);
         });
         _self.ul.innerHTML = html.join('');
-        _self.ul.appendChild(_self.lastLi);
+        if (_self.options.addBtn) {
+            _self.ul.appendChild(_self.lastLi);
+        }
     }
 
     function _filter() {
@@ -105,15 +110,19 @@
     function _initLastLi() {
         var _self = this,
             input, btn, options = _self.options;
+        if (!this.options.addBtn) {
+            return;
+        }
         input = document.createElement('input');
         btn = document.createElement('button');
         btn.innerHTML = '提交';
         bind(btn, 'click', function () {
             btn.disabled = 'disabled';
+            var data = options.setAjaxData.call(_self, input.value);
             ajax({
                 url: options.ajaxUrl,
                 method: options.ajaxMethod,
-                data: options.ajaxData,
+                data: data,
                 success: function (data) {
                     var temp = options.ajaxSuccess(data, input.value);
                     if (!isUndefined(temp)) {

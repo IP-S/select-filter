@@ -177,7 +177,7 @@
                 target = target.parentNode;
             }
             if (li && li.className.indexOf('select-filter-item') > -1) {
-                index = li.dataset.selectFilterDataIndex;
+                index = dataset(li,'selectFilterDataIndex');
                 chooseCb.call(_self, _self.filteredData[index], index, _self.dom);
                 _self.ul.style.display = 'none';
             }
@@ -215,6 +215,36 @@
             }
         }
     })();
+
+    function dataset(obj, key, value) {
+        key = new String(key);
+        if (obj.dataset) {
+            if (typeof value === 'string') {
+                obj.dataset[key] = value;
+                return value;
+            } else {
+                return obj.dataset[key];
+            }
+        }
+        if (/^\w*$/.test(key)) {
+            key = key.replace(/[A-Z]/g, function (str) {
+                return '-' + str.toLowerCase();
+            });
+        } else {
+            throw new Error('Failed to set the "' + key + '" property on "DOMStringMap": "' + key + '" is not a valid property name.');
+        }
+        if (typeof value === 'string') {
+            obj.setAttribute('data-' + key, value);
+            return value;
+        } else {
+            var out = obj.getAttribute('data-' + key);
+            if (typeof out === 'string') {
+                return out;
+            } else {
+                return undefined;
+            }
+        }
+    }
 
     function ajax(options) {
         var xhr = new XMLHttpRequest(),

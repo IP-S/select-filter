@@ -149,27 +149,34 @@
             _self.domOldValue = _self.dom.value;
             _updateList.call(_self);
         });
-        bind(_self.dom, 'focus', function (e) {
+        bind(_self.dom, 'focus', function () {
             _self.ul.style.display = 'block';
         });
         bind(document, 'click', function (e) {
-            var i, l, el;
-            for (i = 0, l = e.path.length; i < l; i++) {
-                el = e.path[i];
-                if (el === _self.dom || el === _self.ul) {
+            var i, l, el, target;
+            e = e || window.event;
+            target = e.target;
+            while (target !== null) {
+                if (target === _self.dom || target === _self.ul) {
                     return;
                 }
+                target = target.parentNode;
             }
             _self.ul.style.display = 'none';
         });
         bind(_self.ul, 'click', function (e) {
-            var li, index, chooseCb = _self.options.chooseCb;
-            e.path.forEach(function (el) {
-                if (el.parentNode === _self.ul) {
-                    li = el;
+            var li, index, chooseCb = _self.options.chooseCb,
+                target;
+            e = e || window.event;
+            target = e.target;
+            while (target !== null) {
+                if (target.parentNode === _self.ul) {
+                    li = target;
+                    break;
                 }
-            });
-            if (li.className.indexOf('select-filter-item') > -1) {
+                target = target.parentNode;
+            }
+            if (li && li.className.indexOf('select-filter-item') > -1) {
                 index = li.dataset.selectFilterDataIndex;
                 chooseCb.call(_self, _self.filteredData[index], index, _self.dom);
                 _self.ul.style.display = 'none';

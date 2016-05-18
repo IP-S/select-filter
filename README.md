@@ -34,29 +34,66 @@ Param: `Object`/`String` ```data``` the Obejct in data Array
 Desc: a function to build html that will be set into the Li element.
 
 Return: `String` html string
+
 ##### options.chooseCb
 Type: `Function`: ```function (data, index, dom)```
 
-Param: `Object`/`String` ```data``` the Obejct in data Array
+Param: `Object`/`String` ```data``` the data that you choose
 
-Param: `Object`/`String` ```index``` the Obejct in data Array
+Param: `Number` ```index``` the data's index that you choose in the filtered array 
 
-Param: `Object`/`String` ```dom``` the Obejct in data Array
+Param: `HTMLInputElement` ```dom``` the input element
 
-Desc: 
+Desc: the callback when you choose an item
 
-Return: `String` html string
+##### options.ajaxUrl
+Type: `String`: default `''`
 
+Desc: the URL that the ajax data will commit to.
 
+##### options.ajaxMethod
+Type: `String`: default `'get'`
 
-                chooseCb: function (data, index, dom) {},
-                ajaxUrl: '',
-                ajaxMethod: 'get',
-                setAjaxData: function (value) {
-                    return value;
-                },
-                ajaxSuccess: function () {},
-                ajaxError: function () {},
-                filterKey: undefined,
-                addBtn: false,
-                appendInContainer: false
+Desc: ajax method.
+
+##### options.setAjaxData
+Type: `Function`: ``` function (value)```
+
+Param: `Object`/`String` ```value``` the value that you input
+
+Desc: a function to build the ajax data.
+
+Return: `Object` ajax data.
+
+##### options.ajaxSuccess
+Type: `Function`: ``` function (data, value)```
+
+Param: `Object` ```data``` the ajax response.
+
+Param: `String` ```value``` the value that you input.
+
+Desc: ajax success callback.
+
+Return: `Object` an Object that will be pushed into the data array.
+
+##### options.ajaxError
+Type: `Function`: ``` function (data)```
+
+Param: `Object` ```data``` the ajax response.
+
+Desc: ajax error callback.
+
+##### options.filterKey
+Type: `String`: default `undefined`
+
+Desc: the filter function will filter the origin data according this key. It can be `undefined` while the origin data is an String array. It can be a String while the origin data is an Object array. It can be an Array of String while filter the data according multiple key.
+
+##### options.addBtn
+Type: `Boolean`: default `false`
+
+Desc: `true` to show the add content li, and `false` to hide.
+
+##### options.appendInContainer
+Type: `Boolean`: default `false`
+
+Desc: anyway, sugguest to be `ture`

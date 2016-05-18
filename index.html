@@ -33,15 +33,7 @@
             addBtn: true
         });
 
-        var b = new SelectFilter(document.getElementById('sdfg'), data, {
-            listBuilder: function (d) {
-                //console.log(this)
-                return '<div>'+d+'</div>';
-            },
-            ajaxSuccess: function (data, value) {
-                return value;
-            }
-        });
+        var b = new SelectFilter(document.getElementById('sdfg'), data);
 
         console.log(a);
     </script>

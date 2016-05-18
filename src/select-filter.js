@@ -25,6 +25,9 @@
             options = data;
             this.data = options.data;
         } else {
+            if (isUndefined(options)) {
+                options = {};
+            }
             options.data = this.data = data;
         }
         this.dom = dom;
@@ -177,7 +180,7 @@
                 target = target.parentNode;
             }
             if (li && li.className.indexOf('select-filter-item') > -1) {
-                index = dataset(li,'selectFilterDataIndex');
+                index = dataset(li, 'selectFilterDataIndex');
                 chooseCb.call(_self, _self.filteredData[index], index, _self.dom);
                 _self.ul.style.display = 'none';
             }

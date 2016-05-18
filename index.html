@@ -1,8 +1,10 @@
 <!doctype html>
 <html>
+
 <head>
     <meta charset="utf-8">
-    </head>
+</head>
+
 <body>
 
     <input type="text" id="asdf" />
@@ -18,6 +20,22 @@
                 '中文阿斯蒂芬',
                 '中文a阿斯蒂芬',
             ];
+        var data2 = [{
+            key: '1234',
+            value: 'dfg'
+        }, {
+            key: 'adsf',
+            value: 'dfg'
+        }, {
+            key: '1234',
+            value: '中文'
+        }, {
+            key: 'fsdg',
+            value: 'dfg'
+        }, {
+            key: '中文阿斯蒂芬',
+            value: '使得法国'
+        }];
         var a = new SelectFilter(document.getElementById('asdf'), data, {
             listBuilder: function (d) {
                 //console.log(this)
@@ -33,7 +51,21 @@
             addBtn: true
         });
 
-        var b = new SelectFilter(document.getElementById('sdfg'), data);
+        var b = new SelectFilter(document.getElementById('sdfg'), data2, {
+            listBuilder: function (d) {
+                //console.log(this)
+                return d.value;
+            },
+            ajaxSuccess: function (data, value) {
+                return value;
+            },
+            chooseCb: function (d, i) {
+                console.log(d)
+                console.log(i)
+            },
+            filterKey: 'key',
+            addBtn: false
+        });
 
         console.log(a);
     </script>

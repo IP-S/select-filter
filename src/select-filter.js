@@ -1,6 +1,6 @@
 (function (window) {
     var tpl = {
-        li: '<li class="select-filter-item" data-select-filter-data-index="{index}">{content}</li>'
+        li: '<li class="select-filter-item{selected}" data-select-filter-data-index="{index}">{content}</li>'
     };
 
     function SelectFilter(dom, data, options) {
@@ -37,6 +37,7 @@
         this.lastLi = document.createElement('li');
         this.domOldValue;
         this.filteredData;
+        this.choosenObj;
 
         _updateList.call(this);
         _initLastLi.call(this);
@@ -44,6 +45,14 @@
         _styleHandler.call(this);
         _initDom.call(this);
     }
+
+    SelectFilter.prototype.show = function () {
+        this.ul.style.display = 'block';
+    };
+
+    SelectFilter.prototype.hide = function () {
+        this.ul.style.display = 'none';
+    };
 
     window.SelectFilter = SelectFilter;
 
@@ -57,6 +66,7 @@
         data.forEach(function (e, i) {
             var s = tpl.li
                 .replace(/{index}/g, i)
+                .replace(/{selected}/g, e === _self.choosenObj ? ' select-filter-selected' : '')
                 .replace(/{content}/g, listBuilder.call(_self, e));
             html.push(s);
         });
@@ -169,7 +179,7 @@
         });
         bind(_self.ul, 'click', function (e) {
             var li, index, chooseCb = _self.options.chooseCb,
-                target;
+                target, selectedClass = _self.options.selectedClass;
             e = e || window.event;
             target = e.target;
             while (target !== null) {
@@ -182,6 +192,8 @@
             if (li && li.className.indexOf('select-filter-item') > -1) {
                 index = dataset(li, 'selectFilterDataIndex');
                 chooseCb.call(_self, _self.filteredData[index], index, _self.dom);
+                _self.choosenObj = _self.filteredData[index];
+                _updateList.call(_self);
                 _self.ul.style.display = 'none';
             }
         });

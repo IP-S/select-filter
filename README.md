@@ -96,4 +96,11 @@ Desc: `true` to show the add content li, and `false` to hide.
 ##### options.appendInContainer
 Type: `Boolean`: default `false`
 
-Desc: anyway, sugguest to be `ture`
+Desc: whatever, sugguest to be `ture`
+
+## method
+#### SelectFilter.prototype.show()
+Desc: show list.
+
+#### SelectFilter.prototype.hide()
+Desc: hide list.
